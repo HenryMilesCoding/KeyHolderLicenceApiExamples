@@ -1,4 +1,6 @@
-﻿using HenryMilesLicenceOnlineWpf.Helper;
+﻿using HenryMilesLicenceApi.Enums;
+using HenryMilesLicenceApi.Services;
+using HenryMilesLicenceOnlineWpf.Helper;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.Text;
@@ -21,19 +23,22 @@ namespace HenryMilesLicenceOnlineWpf
     {
         public IConfiguration optionalSecrets;
         public Configuration config;
+        public ApiCreatesService ApiCreatesService;
 
         public MainWindow()
         {
             InitializeComponent();
+            config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            ApiCreatesService = new ApiCreatesService();
+            ApiCreatesService.fireOn = SystemEnvironmentDbEnum.Tst;
 
             var builder = new ConfigurationBuilder()
             .AddUserSecrets<MainWindow>();
 
             optionalSecrets = builder.Build();
 
-            config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            string keyBefore = config.AppSettings.Settings["NewAccountModel"].Value;
-            ConfigHelper.UpdateValue(config, "NewAccountModel", "is_empty", "appSettings");
+            //string keyBefore = config.AppSettings.Settings["NewAccountModel"].Value;
+            //ConfigHelper.UpdateValue(config, "NewAccountModel", "is_empty", "appSettings");
         }
     }
 }
