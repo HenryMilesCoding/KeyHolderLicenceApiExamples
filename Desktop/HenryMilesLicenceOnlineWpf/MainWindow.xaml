@@ -1,12 +1,11 @@
-﻿<Window x:Class="HenryMilesLicenceOnlineWpf.MainWindow"
+﻿<Window x:Name="MyWindow" x:Class="HenryMilesLicenceOnlineWpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HenryMilesLicenceOnlineWpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="WPF example online license" Height="450" Width="800" ResizeMode="CanMinimize">
     <Grid>
-
     </Grid>
 </Window>

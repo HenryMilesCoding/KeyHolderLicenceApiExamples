@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using System.Configuration;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +18,21 @@ namespace HenryMilesLicenceOnlineWpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        public IConfiguration optionalSecrets;
+        public Configuration config;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            var builder = new ConfigurationBuilder()
+            .AddUserSecrets<MainWindow>();
+
+            optionalSecrets = builder.Build();
+
+            config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            string key = config.AppSettings.Settings["LicenceKey"].Value;
+            bool stop = true;
         }
     }
 }
