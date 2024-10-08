@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HenryMilesLicenceOnlineWpf.Helper;
+using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.Text;
 using System.Windows;
@@ -31,8 +32,8 @@ namespace HenryMilesLicenceOnlineWpf
             optionalSecrets = builder.Build();
 
             config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            string key = config.AppSettings.Settings["LicenceKey"].Value;
-            bool stop = true;
+            string keyBefore = config.AppSettings.Settings["NewAccountModel"].Value;
+            ConfigHelper.UpdateValue(config, "NewAccountModel", "is_empty", "appSettings");
         }
     }
 }
