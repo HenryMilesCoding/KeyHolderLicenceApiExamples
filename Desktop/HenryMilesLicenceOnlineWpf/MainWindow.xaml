@@ -5,7 +5,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HenryMilesLicenceOnlineWpf"
         mc:Ignorable="d"
-        Title="WPF example online license" Height="450" Width="800" ResizeMode="CanMinimize">
+        Title="WPF example online license" Height="600" Width="1024" ResizeMode="CanMinimize">
     <Grid>
+        <!-- Grid Definitions -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <!-- Menü links -->
+            <ColumnDefinition Width="*" />
+            <!-- Inhalt rechts -->
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <!-- Hauptbereich (Text) -->
+            <RowDefinition Height="Auto" />
+            <!-- Bereich für PublicKey und Licence -->
+            <RowDefinition Height="Auto" />
+            <!-- Button-Bereich -->
+        </Grid.RowDefinitions>
+
+        <!-- Linkes Menü mit Buttons für Endpunkte -->
+        <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="10">
+            <Button x:Name="NewAccountButton" Content="New account result" Margin="0,2" Click="NewAccountButton_Click" />
+            <Button x:Name="NewLicenceButton" Content="New licence result" Margin="0,2" />
+            <Button x:Name="GetLicenceButton" Content="Get licences list" Margin="0,2" />
+            <Button x:Name="LicenceModelButton" Content="CreatelicenceModel-Request" Margin="0,2" Click="LicenceModelButton_Click" />
+            <Button x:Name="AccountModelButton" Content="CreateaccountModel-Result" Margin="0,2" Click="AccountModelButton_Click" />
+            <Button x:Name="KeyListModelButton" Content="GetkeylistModel" Margin="0,2" />
+        </StackPanel>
+
+        <!-- Rechtes Textfeld zur Anzeige von API-Ergebnissen -->
+        <TextBox x:Name="ApiResponseTextBox"
+                 Grid.Column="1" Grid.Row="0"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 Margin="10"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+
+        <!-- Felder für PublicKey und Licence -->
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" Margin="10">
+            <TextBlock Text="Public Key:" FontWeight="Bold" />
+            <TextBox x:Name="PublicKeyTextBox" Height="30" Margin="0,5,0,10" />
+
+            <TextBlock Text="Licence:" FontWeight="Bold" />
+            <TextBox x:Name="LicenceTextBox" Height="30" Margin="0,5,0,10" />
+        </StackPanel>
+
+        <!-- Buttons für Lizenzstatus prüfen und Lizenz ungültig machen -->
+        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10">
+            <Button Content="Check License Status" Click="CheckLicenseStatus_Click" Margin="5" />
+            <Button Content="Invalidate License" Click="InvalidateLicense_Click" Margin="5" />
+            <TextBox x:Name="StatusResultTextBox" Width="200" Height="30" Margin="5" IsReadOnly="True" />
+        </StackPanel>
     </Grid>
 </Window>

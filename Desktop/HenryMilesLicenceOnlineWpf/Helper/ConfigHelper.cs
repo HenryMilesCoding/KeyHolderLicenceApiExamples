@@ -35,7 +35,6 @@ namespace HenryMilesLicenceOnlineWpf.Helper
             }
             catch (Exception exept)
             {
-                bool stop = true;
                 // throw;
             }
         }
