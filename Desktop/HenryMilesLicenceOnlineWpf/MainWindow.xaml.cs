@@ -1,5 +1,7 @@
 ﻿using HenryMilesLicenceApi.Enums;
+using HenryMilesLicenceApi.Models;
 using HenryMilesLicenceApi.Models.Api.createaccount;
+using HenryMilesLicenceApi.Models.Api.Getkeylist;
 using HenryMilesLicenceApi.Services;
 using HenryMilesLicenceOnlineWpf.Constants;
 using HenryMilesLicenceOnlineWpf.Helper;
@@ -30,6 +32,8 @@ namespace HenryMilesLicenceOnlineWpf
         public Configuration config;
         public ApiCreatesService HenryCreate;
         public ApiCheckService HenryCheck;
+        public ApiReadsService HenryReader;
+        public CreateaccountModel actualUser;
 
         public MainWindow()
         {
@@ -39,6 +43,9 @@ namespace HenryMilesLicenceOnlineWpf
             HenryCreate.fireOn = SystemEnvironmentDbEnum.Tst;
             HenryCheck = new ApiCheckService();
             HenryCheck.fireOn = HenryCreate.fireOn;
+            HenryReader = new ApiReadsService();
+            HenryReader.fireOn = HenryCreate.fireOn;
+            actualUser = new CreateaccountModel();
 
             var builder = new ConfigurationBuilder()
             .AddUserSecrets<MainWindow>();
@@ -46,18 +53,21 @@ namespace HenryMilesLicenceOnlineWpf
             optionalSecrets = builder.Build();
 
             FillKeyAndLicence();
-            //string keyBefore = config.AppSettings.Settings["NewAccountModel"].Value;
-            //ConfigHelper.UpdateValue(config, "NewAccountModel", "is_empty", "appSettings");
         }
 
         private void FillKeyAndLicence()
         {
-            if (string.IsNullOrEmpty(config.AppSettings.Settings["NewAccountModel"].Value))
+            if (string.IsNullOrEmpty(config.AppSettings.Settings[INeedConfig.NewAccountModel].Value))
             {
                 return;
             }
 
-            PublicKeyTextBox.Text = config.AppSettings.Settings["NewAccountModel"].Value;
+            actualUser = JsonConvert.DeserializeObject<CreateaccountModel>(config.AppSettings.Settings[INeedConfig.NewAccountModel].Value);
+
+            if (actualUser != null)
+            {
+                PublicKeyTextBox.Text = actualUser.Backdata.InfosToYourNewAccount.YourNewPublicKey;
+            }
         }
 
         private async void CheckLicenseStatus_Click(object sender, RoutedEventArgs e)
@@ -185,7 +195,24 @@ namespace HenryMilesLicenceOnlineWpf
             if (newAccount != null)
             {
                 ConfigHelper.UpdateValue(config, INeedConfig.NewAccountModel, bringUp, INeedSection.appSettings);
+                FillKeyAndLicence();
             }
+        }
+
+        private void GetLicenceButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (actualUser == null)
+            {
+                return;
+            }
+
+            GetKeylistRequestModel requestForList = new GetKeylistRequestModel();
+            requestForList.secret = actualUser.Backdata.InfosToYourNewAccount.YourSecret;
+            requestForList.userKey = actualUser.Backdata.InfosToYourNewAccount.YourNewPrivateKey;
+            GetkeylistModel resultForList = HenryReader.GetKeylist(requestForList, true);
+
+            string bringUp = JsonConvert.SerializeObject(resultForList, Formatting.Indented);
+            FillDisplay(bringUp);
         }
 
         // Weitere API-Endpunkt-Methoden...

@@ -27,7 +27,7 @@
         <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="10">
             <Button x:Name="NewAccountButton" Content="New account result" Margin="0,2" Click="NewAccountButton_Click" />
             <Button x:Name="NewLicenceButton" Content="New licence result" Margin="0,2" />
-            <Button x:Name="GetLicenceButton" Content="Get licences list" Margin="0,2" />
+            <Button x:Name="GetLicenceButton" Content="Get licences list" Margin="0,2" Click="GetLicenceButton_Click" />
             <Button x:Name="LicenceModelButton" Content="CreatelicenceModel-Request" Margin="0,2" Click="LicenceModelButton_Click" />
             <Button x:Name="AccountModelButton" Content="CreateaccountModel-Result" Margin="0,2" Click="AccountModelButton_Click" />
             <Button x:Name="KeyListModelButton" Content="GetkeylistModel" Margin="0,2" />
