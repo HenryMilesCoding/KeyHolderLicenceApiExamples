@@ -30,7 +30,7 @@
             <Button x:Name="GetLicenceButton" Content="Get licences list" Margin="0,2" Click="GetLicenceButton_Click" />
             <Button x:Name="LicenceModelButton" Content="CreatelicenceModel-Request" Margin="0,2" Click="LicenceModelButton_Click" />
             <Button x:Name="AccountModelButton" Content="CreateaccountModel-Result" Margin="0,2" Click="AccountModelButton_Click" />
-            <Button x:Name="KeyListModelButton" Content="GetkeylistModel" Margin="0,2" />
+            <Button x:Name="KeyListModelButton" Content="GetkeylistModel" Margin="0,2" Click="KeyListModelButton_Click" />
         </StackPanel>
 
         <!-- Rechtes Textfeld zur Anzeige von API-Ergebnissen -->
