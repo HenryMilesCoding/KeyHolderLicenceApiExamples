@@ -3,6 +3,7 @@ using HenryMilesLicenceApi.Models;
 using HenryMilesLicenceApi.Models.Api.createaccount;
 using HenryMilesLicenceApi.Models.Api.Createlicence;
 using HenryMilesLicenceApi.Models.Api.Getkeylist;
+using HenryMilesLicenceApi.Models.Api.readlicence;
 using HenryMilesLicenceApi.Services;
 using HenryMilesLicenceOnlineWpf.Constants;
 using HenryMilesLicenceOnlineWpf.Helper;
@@ -70,15 +71,31 @@ namespace HenryMilesLicenceOnlineWpf
             {
                 PublicKeyTextBox.Text = actualUser.Backdata.InfosToYourNewAccount.YourNewPublicKey;
             }
+
+            string lastLicence = config.AppSettings.Settings[ConfigKey.LicenceKey].Value;
+            if (lastLicence != null)
+            {
+                LicenceTextBox.Text = lastLicence;
+            }
         }
 
-        private async void CheckLicenseStatus_Click(object sender, RoutedEventArgs e)
+        private void CheckLicenseStatus_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Lese den PublicKey und die Lizenz aus den TextBoxen
                 string publicKey = PublicKeyTextBox.Text;
                 string licence = LicenceTextBox.Text;
+
+                if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(licence))
+                {
+                    FillDisplay("An account and a license must first be created.");
+                    return;
+                }
+
+                ReadlicenceModel result = HenryCheck.VerifiyLicence(publicKey, licence, true);
+                result.State = (result.State == null) ? 0 : result.State;
+                StatusResultTextBox.Text = result.Message;
+                FillDisplay(result);
             }
             catch (Exception ex)
             {
@@ -93,32 +110,12 @@ namespace HenryMilesLicenceOnlineWpf
                 // Lese den PublicKey und die Lizenz aus den TextBoxen
                 string publicKey = PublicKeyTextBox.Text;
                 string licence = LicenceTextBox.Text;
-
-                // Rufe den Endpunkt auf, um die Lizenz ungültig zu machen
-                //var result = await _apiClient.InvalidateLicenseAsync(publicKey, licence);
-
-                // Zeige das Ergebnis im Textfeld an
-                //ApiResponseTextBox.Text = result.ToString();
                 StatusResultTextBox.Text = "License invalidated";
                 bool stop = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
-            }
-        }
-
-        private async void RenewLicense_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Lese den PublicKey und die Lizenz aus den TextBoxen
-                string publicKey = PublicKeyTextBox.Text;
-                string licence = LicenceTextBox.Text;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}");
+                FillDisplay(ex.Message);
             }
         }
 
@@ -203,6 +200,8 @@ namespace HenryMilesLicenceOnlineWpf
             if (result != null)
             {
                 FillDisplay(result);
+                ConfigHelper.UpdateValue(config, ConfigKey.LicenceKey, result.Backdata.NewKey, INeedSection.appSettings);
+                FillKeyAndLicence();
             }
         }
 
