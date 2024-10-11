@@ -3,6 +3,7 @@ using HenryMilesLicenceApi.Models;
 using HenryMilesLicenceApi.Models.Api.createaccount;
 using HenryMilesLicenceApi.Models.Api.Createlicence;
 using HenryMilesLicenceApi.Models.Api.Getkeylist;
+using HenryMilesLicenceApi.Models.Api.manualdeactivate;
 using HenryMilesLicenceApi.Models.Api.readlicence;
 using HenryMilesLicenceApi.Services;
 using HenryMilesLicenceOnlineWpf.Constants;
@@ -32,10 +33,10 @@ namespace HenryMilesLicenceOnlineWpf
     {
         public IConfiguration optionalSecrets;
         public Configuration config;
-        public ApiCreatesService HenryCreate;
-        public ApiCheckService HenryCheck;
-        public ApiReadsService HenryReader;
-        public CreateaccountModel actualUser;
+        public ApiCreatesService HenryCreate { get; private set; }
+        public ApiCheckService HenryCheck { get; private set; }
+        public ApiReadsService HenryReader { get; private set; }
+        public CreateaccountModel actualUser { get; private set; }
 
         public MainWindow()
         {
@@ -99,18 +100,34 @@ namespace HenryMilesLicenceOnlineWpf
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                FillDisplay(ex.Message);
             }
         }
 
-        private async void InvalidateLicense_Click(object sender, RoutedEventArgs e)
+        private void InvalidateLicense_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Lese den PublicKey und die Lizenz aus den TextBoxen
-                string publicKey = PublicKeyTextBox.Text;
+                string privateKey = actualUser.Backdata.InfosToYourNewAccount.YourNewPrivateKey;
+                string secret = actualUser.Backdata.InfosToYourNewAccount.YourSecret;
                 string licence = LicenceTextBox.Text;
-                StatusResultTextBox.Text = "License invalidated";
+
+                if (actualUser == null)
+                {
+                    FillDisplay("You must first create an account for it to work!");
+                    return;
+                }
+
+                if (licence == null)
+                {
+                    FillDisplay("You must first create an licence for it to work!");
+                    return;
+                }
+
+                ManualdeactivateModel result = HenryCreate.DisableLicense("EN", privateKey, secret, licence);
+
+                StatusResultTextBox.Text = result.Message;
+                FillDisplay(result);
                 bool stop = true;
             }
             catch (Exception ex)
