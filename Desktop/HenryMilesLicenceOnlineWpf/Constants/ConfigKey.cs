@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HenryMilesLicenceOnlineWpf.Constants
 {
-    public static class INeedConfig
+    public static class ConfigKey
     {
         public const string PublicKey = "PublicKey";
         public const string PrivateKey = "PrivateKey";

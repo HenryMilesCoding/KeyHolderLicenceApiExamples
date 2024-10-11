@@ -1,6 +1,7 @@
 ﻿using HenryMilesLicenceApi.Enums;
 using HenryMilesLicenceApi.Models;
 using HenryMilesLicenceApi.Models.Api.createaccount;
+using HenryMilesLicenceApi.Models.Api.Createlicence;
 using HenryMilesLicenceApi.Models.Api.Getkeylist;
 using HenryMilesLicenceApi.Services;
 using HenryMilesLicenceOnlineWpf.Constants;
@@ -57,12 +58,13 @@ namespace HenryMilesLicenceOnlineWpf
 
         private void FillKeyAndLicence()
         {
-            if (string.IsNullOrEmpty(config.AppSettings.Settings[INeedConfig.NewAccountModel].Value))
+            if (string.IsNullOrEmpty(config.AppSettings.Settings[ConfigKey.NewAccountModel].Value))
             {
+                FillDisplay("You must first create an account before this step works.");
                 return;
             }
 
-            actualUser = JsonConvert.DeserializeObject<CreateaccountModel>(config.AppSettings.Settings[INeedConfig.NewAccountModel].Value);
+            actualUser = JsonConvert.DeserializeObject<CreateaccountModel>(config.AppSettings.Settings[ConfigKey.NewAccountModel].Value);
 
             if (actualUser != null)
             {
@@ -77,13 +79,6 @@ namespace HenryMilesLicenceOnlineWpf
                 // Lese den PublicKey und die Lizenz aus den TextBoxen
                 string publicKey = PublicKeyTextBox.Text;
                 string licence = LicenceTextBox.Text;
-
-                // Rufe den Endpunkt auf, um den Status der Lizenz zu prüfen
-                //var result = await _apiClient.CheckLicenseStatusAsync(publicKey, licence);
-
-                // Zeige das Ergebnis im Textfeld an
-                //ApiResponseTextBox.Text = result.ToString();
-                //StatusResultTextBox.Text = result.IsValid ? "Valid" : "Invalid";
             }
             catch (Exception ex)
             {
@@ -120,32 +115,6 @@ namespace HenryMilesLicenceOnlineWpf
                 // Lese den PublicKey und die Lizenz aus den TextBoxen
                 string publicKey = PublicKeyTextBox.Text;
                 string licence = LicenceTextBox.Text;
-
-                // Rufe den Endpunkt auf, um die Lizenz zu verlängern
-                //var result = await _apiClient.RenewLicenseAsync(publicKey, licence);
-
-                // Zeige das Ergebnis im Textfeld an
-                //ApiResponseTextBox.Text = result.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}");
-            }
-        }
-
-        private async void GetLicenseInfo_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Lese den PublicKey und die Lizenz aus den TextBoxen
-                string publicKey = PublicKeyTextBox.Text;
-                string licence = LicenceTextBox.Text;
-
-                // Rufe den Endpunkt auf, um Lizenzinformationen zu erhalten
-                //var result = await _apiClient.GetLicenseInfoAsync(publicKey, licence);
-
-                // Zeige das Ergebnis im Textfeld an
-                //ApiResponseTextBox.Text = result.ToString();
             }
             catch (Exception ex)
             {
@@ -155,7 +124,7 @@ namespace HenryMilesLicenceOnlineWpf
 
         private void AccountModelButton_Click(object sender, RoutedEventArgs e)
         {
-            string newAccountAsString = "{\r\n  \"action\": \"createaccount\",\r\n  \"state\": 1,\r\n  \"message\": \"Welcome! To your new Account nJYhmyZ9QQtH0lhJVvRKaeK5EMTzmHPfq\",\r\n  \"backdata\": {\r\n    \"Version\": 3,\r\n    \"RequestState\": 200,\r\n    \"mail\": null,\r\n    \"optin\": null,\r\n    \"InfosToYourNewAccount\": {\r\n      \"YourNewPrivateKey\": \"nJYhmyZ9QQtH0lhJVvRKaeK5EMTzmHPfq\",\r\n      \"YourNewPublicKey\": \"249335896263489723510177676594774\",\r\n      \"YourSecret\": \"ZPbK*$4jICIx$fE$HP\"\r\n    }\r\n  }\r\n}";
+            string newAccountAsString = "{  'action': 'createaccount',  'state': 1,  'message': 'Welcome! To your new Account nJYhmyZ9QQtH0lhJVvRKaeK5EMTzmHPfq',  'backdata': { 'Version': 3, 'RequestState': 200, 'mail': null, 'optin': null, 'InfosToYourNewAccount': { 'YourNewPrivateKey': 'nJYhmyZ9QQtH0lhJVvRKaeK5EMTzmHPfq', 'YourNewPublicKey': '249335896263489723510177676594774', 'YourSecret': 'ZPbK*$4jICIx$fE$HP' }  }}";
             FillDisplay(newAccountAsString);
         }
 
@@ -182,7 +151,8 @@ namespace HenryMilesLicenceOnlineWpf
 
         private void LicenceModelButton_Click(object sender, RoutedEventArgs e)
         {
-            var accountModel = HenryCreate.CreateLicenceTemplate("<SET_PRIVATE_KEY>", "<SET_SECRET>");
+            GetKeylistRequestModel accountModel = HenryCreate.CreateLicenceTemplate("<SET_PRIVATE_KEY>", "<SET_SECRET>");
+            // Attention: Enum values cannot be displayed correctly in the text window. The text values of enums are then always
             FillDisplay(accountModel);
         }
 
@@ -194,7 +164,7 @@ namespace HenryMilesLicenceOnlineWpf
 
             if (newAccount != null)
             {
-                ConfigHelper.UpdateValue(config, INeedConfig.NewAccountModel, bringUp, INeedSection.appSettings);
+                ConfigHelper.UpdateValue(config, ConfigKey.NewAccountModel, bringUp, INeedSection.appSettings);
                 FillKeyAndLicence();
             }
         }
@@ -203,16 +173,37 @@ namespace HenryMilesLicenceOnlineWpf
         {
             if (actualUser == null)
             {
+                FillDisplay("You must first create an account before this step works.");
                 return;
             }
 
             GetKeylistRequestModel requestForList = new GetKeylistRequestModel();
             requestForList.secret = actualUser.Backdata.InfosToYourNewAccount.YourSecret;
             requestForList.userKey = actualUser.Backdata.InfosToYourNewAccount.YourNewPrivateKey;
-            GetkeylistModel resultForList = HenryReader.GetKeylist(requestForList, true);
+            GetkeylistModel resultForList = HenryReader.GetKeylist(requestForList, false);
+            // Attention: Enum values cannot be displayed correctly in the text window. The text values of enums are then always
 
-            string bringUp = JsonConvert.SerializeObject(resultForList, Formatting.Indented);
-            FillDisplay(bringUp);
+            FillDisplay(resultForList);
+        }
+
+        private void NewLicenceButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (actualUser == null)
+            {
+                FillDisplay("You must first create an account before this step works.");
+                return;
+            }
+
+            string userKey = actualUser.Backdata.InfosToYourNewAccount.YourNewPrivateKey;
+            string secret = actualUser.Backdata.InfosToYourNewAccount.YourSecret;
+
+            GetKeylistRequestModel templateToCreate = HenryCreate.CreateLicenceTemplate(userKey, secret);
+            CreatelicenceModel result = HenryCreate.CreateNewLicence(templateToCreate);
+
+            if (result != null)
+            {
+                FillDisplay(result);
+            }
         }
 
         // Weitere API-Endpunkt-Methoden...

@@ -11,10 +11,9 @@ Here you will find concrete application examples for the KeyHolder and the Henry
 ## Create and check a license
 ```mermaid
 sequenceDiagram
-KeyHolder -x Our API: Command: Create account
-Our API ->> KeyHolder: Antwort: Accountdaten in JSON
-KeyHolder -x Our API: Command: Create system
-Our API ->> KeyHolder: Answer: Return system
+KeyHolder ->>+Our API: Command: Create account
+Our API-->>-KeyHolder: Antwort: Accountdaten in JSON
+
 KeyHolder -x Our API: Command: Create license
 Our API ->> KeyHolder: Answer: Storage locally retrievable
 KeyHolder -->> Your product: Give license to customer to enter
