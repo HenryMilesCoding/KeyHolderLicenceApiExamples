@@ -1,3 +1,4 @@
+
 # KeyHolderLicenceApiExamples
 Here you will find concrete application examples for the KeyHolder and the HenryMilesLicenceAPI.
 
@@ -12,12 +13,13 @@ Here you will find concrete application examples for the KeyHolder and the Henry
 ```mermaid
 sequenceDiagram
 KeyHolder ->>+Our API: Command: Create account
-Our API-->>-KeyHolder: Antwort: Accountdaten in JSON
+Our API-->>-KeyHolder: Answer: Accountdata in JSON
 
-KeyHolder -x Our API: Command: Create license
-Our API ->> KeyHolder: Answer: Storage locally retrievable
+KeyHolder ->>+Our API: Command: Create license
+Our API-->>-KeyHolder: Answer: Storage locally retrievable
+
 KeyHolder -->> Your product: Give license to customer to enter
 
-Your product ->> Our API: Request: Checking a license with system ID and license
-Our API ->> Your product: Answer: Success or failure model
+Your product->>+Our API:  Request: Checking a license with system 
+Our API-->>-Your product: Answer: Success or failure model
 ```
